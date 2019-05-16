@@ -22,12 +22,6 @@ InitDatabase() {
     airflow initdb
 }
 
-KeepRunning() {
-    while true; do
-    sleep 3600
-    done
-}
-
 echo "+ The run environment is $env."
 
 if [[ "$env" = "local" ]]; then
