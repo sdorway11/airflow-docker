@@ -1,0 +1,96 @@
+version: '3.7'
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: airflow_webserver
+    environment:
+      DOCKER_APP_ENV: local
+    env_file: .env_local
+    depends_on:
+      - airflow_postgres
+      - airflow_redis
+    networks:
+      - airflow_backend
+    ports:
+      - "8080:8080"
+    volumes:
+        - ./dags:/usr/local/airflow/dags
+        - ./plugins:/usr/local/airflow/plugins
+        - ./sensors:/usr/local/airflow/sensors
+        - ./app:/usr/local/airflow/app
+        - ./logs:/usr/local/airflow/logs
+    command: webserver
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: airflow_scheduler
+    environment:
+      DOCKER_APP_ENV: local
+    restart: always
+    env_file: .env_local
+    volumes:
+        - ./dags:/usr/local/airflow/dags
+        - ./plugins:/usr/local/airflow/plugins
+        - ./sensors:/usr/local/airflow/sensors
+        - ./app:/usr/local/airflow/app
+        - ./logs:/usr/local/airflow/logs
+    depends_on:
+        - webserver
+    networks:
+      - airflow_backend
+    command: scheduler
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: airflow_worker
+    environment:
+      DOCKER_APP_ENV: local
+    restart: always
+    env_file: .env_local
+    volumes:
+        - ./dags:/usr/local/airflow/dags
+        - ./plugins:/usr/local/airflow/plugins
+        - ./sensors:/usr/local/airflow/sensors
+        - ./app:/usr/local/airflow/app
+        - ./logs:/usr/local/airflow/logs
+    depends_on:
+        - webserver
+        - scheduler
+    ports:
+      - "8794:8793"
+    networks:
+      - airflow_backend
+    command: worker
+
+  airflow_postgres:
+    container_name: airflow_postgres
+    image: postgres:9.6
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+      - PGDATA=/var/lib/pgsql/data
+    networks:
+      - airflow_backend
+    volumes:
+      - ./postgres_data:/var/lib/pgsql/data
+    ports:
+      - "5433:5432"
+
+  airflow_redis:
+    container_name: airflow_redis
+    image: redis
+    networks:
+      - airflow_backend
+    ports:
+      - "63799:6379"
+
+networks:
+  airflow_backend:
+    driver: "bridge"

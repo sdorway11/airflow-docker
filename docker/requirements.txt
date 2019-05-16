@@ -1,0 +1,16 @@
+pymysql
+psycopg2-binary
+kombu
+celery[redis]
+pytz
+pyOpenSSL
+ndg-httpsclient
+pyasn1
+boto3
+pymssql
+awscli
+jaydebeapi
+flask-bcrypt
+sqlalchemy-redshift
+bcrypt
+apache-airflow[s3,log,crypto,celery,postgres,hive,jdbc,mysql,kubernetes,ssh,password]==1.10.2
