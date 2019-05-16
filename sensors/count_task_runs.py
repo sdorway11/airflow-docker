@@ -1,8 +1,5 @@
-from datetime import datetime
-
 from airflow.models import TaskInstance
 from airflow.operators.sensors import BaseSensorOperator
-from airflow.utils import timezone
 from airflow.utils.db import provide_session
 from airflow.utils.decorators import apply_defaults
 

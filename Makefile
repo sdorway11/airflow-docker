@@ -4,7 +4,7 @@ local-webserver-bash:
 	docker exec -it airflow_webserver bash
 
 local-up:
-	docker-compose up --build -d
+	docker-compose up -d
 
 local-down:
 	docker-compose down
